@@ -1,0 +1,12 @@
+{
+  "qInfo": {
+    "qId": "measure-4",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qDef": "=avg( {$<Type={'admin'}>} Size)"
+  },
+  "qMetaDef": {
+    "title": "Average admin (other work)"
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "qInfo": {
+      "qId": "measure-1",
+      "qType": "measure"
+    },
+    "qMeasure": {
+      "qDef": "=avg( {$<Type={'feature'}>} Size)"
+    },
+    "qMetaDef": {
+      "title": "Average feature development"
+    }
+  }

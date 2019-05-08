@@ -1,0 +1,12 @@
+{
+  "qInfo": {
+    "qId": "measure-3",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qDef": "=avg( {$<Type={'maintenance'}>} Size)"
+  },
+  "qMetaDef": {
+    "title": "Average maintenance"
+  }
+}

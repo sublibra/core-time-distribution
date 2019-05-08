@@ -1,0 +1,12 @@
+{
+  "qInfo": {
+    "qId": "measure-2",
+    "qType": "measure"
+  },
+  "qMeasure": {
+    "qDef": "=avg( {$<Type={'enhancement'}>} Size)"
+  },
+  "qMetaDef": {
+    "title": "Average enhancement development"
+  }
+}
