@@ -1,0 +1,118 @@
+$color1: #5271C2;
+$color2: #35a541;
+$color3: #bdb235;
+$color4: #db6623;
+
+@function longshadow($color_a,$color_b,$stepnum, $opacity: 1){
+	$gradient_steps: null;
+	@for $i from 1 through $stepnum {
+		$weight: ( ( $i - 1 ) / $stepnum ) * 100;
+		$colour_mix: mix($color_b, rgba($color_a, $opacity), $weight);
+		$seperator: null;
+		@if($i != $stepnum){ 
+			$seperator: #{','}; 
+		}
+		$gradient_steps: append( #{$gradient_steps}, #{$i}px #{$i}px $colour_mix $seperator );
+ }
+  @return $gradient_steps;
+}
+
+.list {  
+  display: flex;
+  align-items: center;
+  flex-flow: column wrap;
+  color: white;
+  font-family: 'Lato';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  max-width: 80%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0px;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+.card {
+  float: left;
+  position: relative;
+  width: calc(100% * .26 - 20px + .26 * 20px);
+  padding: 10px 0 10px 0;
+  height: 300px;
+  
+  &:first-child {
+    .card__front {
+      background: $color1;
+    }
+    .card__num {
+      text-shadow: longshadow(darken($color1, 15%),$color1,100, 0.8);
+    }
+  }
+  
+  &:nth-child(2) {
+     .card__front {
+      background: $color2;
+    }
+    .card__num {
+      text-shadow: longshadow(darken($color2, 15%),$color2,100, 0.8);
+    }
+  }
+  
+  &:nth-child(3) {
+    margin-right: 0;
+     .card__front {
+      background: $color3;
+    }
+    .card__num {
+      text-shadow: longshadow(darken($color3, 15%),$color3,100, 0.8);
+    }
+  }
+  
+  &:nth-child(4) {
+     .card__front {
+      background: $color4;
+    }
+    .card__num {
+      text-shadow: longshadow(darken($color4, 15%),$color4,100, 0.8);
+    }
+  }
+  
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &__front,
+  &__back {
+    height: 300px;
+    overflow: hidden;
+  }
+    
+  &__name {
+    font-size: 16px;
+    padding-top: 10px;
+    font-weight: 700;
+    
+    span {
+      line-height: 0.9;
+      font-size: 32px;
+    }
+  }
+  
+  &__num {
+    font-size: 100px;
+    margin: 0 8px 0 0;
+    font-weight: 700;
+    
+    @media (max-width: 700px) {
+      font-size: 70px;
+    }
+  }
+  
+ 
+}
