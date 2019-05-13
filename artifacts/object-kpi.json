@@ -1,0 +1,31 @@
+{
+  "qInfo": {
+    "qType": "kpis",
+    "qId": "kpi-objects"
+  },
+  "qHyperCubeDef": {
+    "qInitialDataFetch": [
+      {
+        "qTop": 0,
+        "qLeft": 0,
+        "qHeight": 20,
+        "qWidth": 4
+      }
+    ],
+    "qDimensions": [],
+    "qMeasures": [
+      {
+        "qLibraryId": "measure-1"
+      },
+      {
+        "qLibraryId": "measure-2"
+      },
+      {
+        "qLibraryId": "measure-3"
+      },
+      {
+        "qLibraryId": "measure-4"
+      }
+    ]
+  }
+}

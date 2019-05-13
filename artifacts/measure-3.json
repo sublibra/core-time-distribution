@@ -4,6 +4,7 @@
     "qType": "measure"
   },
   "qMeasure": {
+    "qLabel": "maintenance",
     "qDef": "=avg( {$<Type={'maintenance'}>} Size)"
   },
   "qMetaDef": {

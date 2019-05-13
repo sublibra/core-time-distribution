@@ -4,6 +4,7 @@
     "qType": "measure"
   },
   "qMeasure": {
+    "qLabel": "admin",
     "qDef": "=avg( {$<Type={'admin'}>} Size)"
   },
   "qMetaDef": {

@@ -1,7 +1,8 @@
 engine: localhost:29076
 app: core-time
-script: loadscript.qvs
+script: ./artifacts/loadscript.qvs
 measures: ./artifacts/measure*.json
+objects: ./artifacts/object*.json
 connections:
   data:
     type: folder

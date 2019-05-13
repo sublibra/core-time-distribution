@@ -4,7 +4,11 @@
       "qType": "measure"
     },
     "qMeasure": {
-      "qDef": "=avg( {$<Type={'feature'}>} Size)"
+      "qLabel": "feature",
+      "qDef": "=avg( {$<Type={'feature'}>} Size)",
+      "qNumFormat": {
+        "qFmt": "##%"
+      }
     },
     "qMetaDef": {
       "title": "Average feature development"

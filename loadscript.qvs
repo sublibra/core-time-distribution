@@ -1,9 +1,0 @@
-measurements:
-Load * from [lib://data/measurements.xlsx]
-(ooxml, embedded labels);
-
-week:
-Load
-  Date, 
-  week(Date, 0) as week
-Resident measurements;

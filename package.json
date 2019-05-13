@@ -1,0 +1,68 @@
+{
+  "name": "core-time-distribution",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel ./src/index.html",
+    "start:cov": "cross-env NODE_ENV=test parcel ./example/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sublibra/core-time-distribution.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sublibra/core-time-distribution/issues"
+  },
+  "homepage": "https://github.com/sublibra/core-time-distribution#readme",
+  "files": [
+    "src/"
+  ],
+  "main": "src/index.jsx",
+  "dependencies": {
+    "hamus.js": "0.3.0",
+    "react-use-promise": "0.2.0",
+    "picasso.js": "0.25.2",
+    "picasso-plugin-q": "0.25.2",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "enigma.js": "2.4.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.4.4",
+    "@babel/plugin-proposal-class-properties": "7.4.4",
+    "@babel/plugin-transform-async-to-generator": "7.4.4",
+    "@babel/plugin-transform-react-jsx": "7.3.0",
+    "@babel/plugin-transform-runtime": "7.4.4",
+    "@babel/preset-env": "7.4.4",
+    "@babel/preset-react": "7.0.0",
+    "babel-eslint": "10.0.1",
+    "babel-plugin-import": "^1.11.0",
+    "coveralls": "3.0.3",
+    "cross-env": "5.2.0",
+    "eslint": "5.16.0",
+    "eslint-config-airbnb": "17.1.0",
+    "eslint-plugin-import": "2.17.2",
+    "eslint-plugin-jsx-a11y": "6.2.1",
+    "eslint-plugin-react": "7.13.0",
+    "jest": "24.8.0",
+    "jest-puppeteer": "4.1.1",
+    "parcel-bundler": "1.12.3",
+    "puppeteer": "1.15.0",
+    "react-hooks-testing-library": "0.5.0",
+    "react-test-renderer": "16.9.0-alpha.0",
+    "react-testing-library": "7.0.0",
+    "sass": "^1.20.1"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageOnlyFrom": {
+      "src/use-layout.js": true,
+      "src/use-model.js": true,
+      "src/use-picasso.js": true,
+      "src/render-debouncer.js": true
+    }
+  }
+}

@@ -4,6 +4,7 @@
     "qType": "measure"
   },
   "qMeasure": {
+    "qLabel": "enhancement",
     "qDef": "=avg( {$<Type={'enhancement'}>} Size)"
   },
   "qMetaDef": {

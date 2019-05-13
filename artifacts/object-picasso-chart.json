@@ -1,0 +1,49 @@
+{
+  "qInfo": {
+    "qType": "visualization",
+    "qId": "vis-1"
+  },
+  "type": "my-picasso-chart",
+  "labels": true,
+  "qHyperCubeDef": {
+    "qDimensions": [
+      {
+        "qDef": {
+          "qFieldDefs": [
+            "week"
+          ],
+          "qSortCriterias": [
+            {
+              "qSortByAscii": 1,
+              "qSortByLoadOrder": 1
+            }
+          ]
+        }
+      },
+      {
+        "qDef": {
+          "qFieldDefs": [
+            "Type"
+          ]
+        }
+      }
+    ],
+    "qMeasures": [
+      {
+        "qDef": {
+          "qDef": "avg(Size)"
+        }
+      }
+    ],
+    "qInitialDataFetch": [
+      {
+        "qTop": 0,
+        "qHeight": 100,
+        "qLeft": 0,
+        "qWidth": 20
+      }
+    ],
+    "qSuppressZero": false,
+    "qSuppressMissing": false
+  }
+}
