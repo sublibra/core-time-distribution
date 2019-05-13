@@ -38,9 +38,9 @@
     "qInitialDataFetch": [
       {
         "qTop": 0,
-        "qHeight": 500,
+        "qHeight": 100,
         "qLeft": 0,
-        "qWidth": 17
+        "qWidth": 20
       }
     ],
     "qSuppressZero": false,

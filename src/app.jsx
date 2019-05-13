@@ -8,59 +8,59 @@ import usePromise from 'react-use-promise';
 import picasso_props from '../artifacts/object-picasso-chart.json';
 import kpi_props from '../artifacts/object-kpi.json'
 import useKpi from './kpi';
+import background from './img/time.jpg';
 
-const script = 'loadscript.qvs';
-
-const settings_stacked = {
-  settings: {
-    collections: [{
-      key: 'stacked',
-      data: {
-        extract: {
-          field: 'qDimensionInfo/0', //week
-          props: {
-            series: { field: 'qDimensionInfo/1' }, //type
-            end: { field: 'qMeasureInfo/0' } //avg(size)
-          }
-        },
-        stack: {
-          stackKey: d => d.value,
-          value: d => d.end.value
+const settings = {
+  collections: [{
+    key: 'stacked',
+    data: {
+      extract: {
+        field: 'qDimensionInfo/0', //week
+        props: {
+          series: { field: 'qDimensionInfo/1' }, //type
+          end: { field: 'qMeasureInfo/0' } //avg(size)
         }
+      },
+      stack: {
+        stackKey: d => d.value,
+        value: d => d.end.value
       }
-    }],
-    scales: {
-      y: {
-        data: {
-          collection: {
-            key: 'stacked'
-          }
-        },
-        invert: true,
-        expand: 0.2,
-        min: 0,
-        ticks: { values: [0, 20, 40, 60, 80, 100] }
+    }
+  }],
+  scales: {
+    y: {
+      data: {
+        collection: {
+          key: 'stacked'
+        }
       },
-      t: {
-        data: { field: 'qDimensionInfo/0' }, //week
-        include: [0],
-        invert: true,
-      },
-      color: { data: { extract: { field: 'qDimensionInfo/1' } }, type: 'color' }
+      min: 0,
+      max: 1,
+      invert: true,
+      expand: 0.2,
     },
-    components: [{
-      type: 'axis',
-      dock: 'left',
-      scale: 'y'
-    }, {
-      type: 'axis',
-      dock: 'bottom',
-      scale: 't'
-    }, {
-      type: 'legend-cat',
-      scale: 'color',
-      dock: 'top'
-    }, {
+    t: {
+      data: { extract: { field: 'qDimensionInfo/0' } },
+      padding: 0.3
+    },
+    catcolor: {
+      type: 'categorical-color',
+      data: ['feature', 'enhancement', 'maintenance', 'admin'],
+      range: ['#5271C2', '#35a541', '#bdb235', '#db6623']
+    },
+    color: {
+      data: { extract: { field: 'qDimensionInfo/1' } },
+      type: 'color',
+    },
+  },
+  components: [
+    { type: 'axis', dock: 'left', scale: 'y' },
+    { type: 'axis', dock: 'bottom', scale: 't' },
+    { type: 'text', text: 'Qlik Core Time distribution', dock: 'top' },
+    { type: 'text', text: 'Size', dock: 'left' },
+    { type: 'text', text: 'week', dock: 'bottom' },
+    //{ type: 'legend-cat', scale: 'catcolor', dock: 'top' },
+    {
       key: 'bars',
       type: 'box',
       data: {
@@ -70,14 +70,28 @@ const settings_stacked = {
         major: { scale: 't' },
         minor: { scale: 'y', ref: 'end' },
         box: {
-          fill: { scale: 'color', ref: 'series' }
-        }
+          maxWidthPx: 200,
+          fill: function(d) { return d.resources.scale('catcolor')(d.datum.series.label); },
+        },
+      brush: {
+        trigger: [{
+          on: 'tap',
+          contexts: ['highlight'],
+        }],
+        consume: [{
+          context: 'highlight',
+          style: {
+            inactive: {
+              opacity: 0.3,
+            },
+          },
+        }],
+      },
       }
-    }]
-  }
-}
+    }],
+};
 
-const settings = {
+const settings_barchart = {
   scales: {
     x: {
       data: { extract: { field: 'qDimensionInfo/0', props: { name: { field: 'qDimensionInfo/0', label: v => v.qText } } } },
@@ -89,7 +103,7 @@ const settings = {
       invert: true,
     },
     color: {
-      data: { extract: { field: 'qDimensionInfo/1' } },
+      data: { extract: { field: 'qDimensionInfo/0' } },
       type: 'color',
     },
   },
@@ -109,7 +123,6 @@ const settings = {
           props: {
             start: 0,
             end: { field: 'qMeasureInfo/0' },
-            
           },
         },
       },
@@ -124,24 +137,6 @@ const settings = {
       }
     }],
 };
-
-/*
-,
-      brush: {
-        trigger: [{
-          on: 'tap',
-          contexts: ['highlight'],
-        }],
-        consume: [{
-          context: 'highlight',
-          style: {
-            inactive: {
-              opacity: 0.3,
-            },
-          },
-        }],
-      },
-*/
 
 const useGlobal = session => usePromise(() => session.open(), [session]);
 
@@ -174,6 +169,8 @@ export default function App() {
   // render picasso chart.
   const pic = usePicasso(element, settings, layout);
 
+  console.log(layout);
+
   const [model2, modelError2] = useModel(app, kpi_props);
   // fetch the layout.
   const [layout2, layoutError2] = useLayout(model2);
@@ -182,7 +179,6 @@ export default function App() {
   const kpi = useKpi(layout2);
 
   // we want to start with one value highlighted in the chart.
-  /*
   useEffect(() => {
     if (!pic) return;
     // access the brush instance
@@ -190,7 +186,6 @@ export default function App() {
     // highlight a value
     highlighter.addValue('qHyperCube/qDimensionInfo/0', 1);
   }, [pic]);
-  */
 
   let msg = '';
   if (!app) {
