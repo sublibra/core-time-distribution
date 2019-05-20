@@ -7,7 +7,7 @@ export default function useKpi(layout) {
   if (!layout) {
     return null;
   } else {
-    console.log(layout);
+    console.log('New layout:',layout);
   }
 
   return (

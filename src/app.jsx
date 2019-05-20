@@ -8,7 +8,6 @@ import usePromise from 'react-use-promise';
 import picasso_props from '../artifacts/object-picasso-chart.json';
 import kpi_props from '../artifacts/object-kpi.json'
 import useKpi from './kpi';
-import background from './img/time.jpg';
 
 const settings = {
   collections: [{
@@ -55,7 +54,7 @@ const settings = {
   },
   components: [
     { type: 'axis', dock: 'left', scale: 'y' },
-    { type: 'axis', dock: 'bottom', scale: 't' },
+    { type: 'axis', dock: 'bottom', scale: 't'},
     { type: 'text', text: 'Qlik Core Time distribution', dock: 'top' },
     { type: 'text', text: 'Size', dock: 'left' },
     { type: 'text', text: 'week', dock: 'bottom' },
@@ -72,7 +71,8 @@ const settings = {
         box: {
           maxWidthPx: 200,
           fill: function(d) { return d.resources.scale('catcolor')(d.datum.series.label); },
-        },
+        }
+      },
       brush: {
         trigger: [{
           on: 'tap',
@@ -82,12 +82,11 @@ const settings = {
           context: 'highlight',
           style: {
             inactive: {
-              opacity: 0.3,
+              opacity: 0.5,
             },
           },
         }],
       },
-      }
     }],
 };
 
@@ -162,6 +161,7 @@ export default function App() {
   const session = useMemo(() => enigma.create({ schema, url: 'ws://localhost:29076/app' }), [false]);
   const [global] = useGlobal(session);
   const app = useApp(global);
+
   // fetch the model
   const [model, modelError] = useModel(app, picasso_props);
   // fetch the layout.
@@ -169,22 +169,34 @@ export default function App() {
   // render picasso chart.
   const pic = usePicasso(element, settings, layout);
 
-  console.log(layout);
-
+  // KPI Objects
   const [model2, modelError2] = useModel(app, kpi_props);
   // fetch the layout.
   const [layout2, layoutError2] = useLayout(model2);
-
   // render kpi
   const kpi = useKpi(layout2);
 
+  const selectVal = async (value) => {
+    const field = await app.getField('week');
+    await field.lowLevelSelect([value],true);
+  };
+  
   // we want to start with one value highlighted in the chart.
   useEffect(() => {
     if (!pic) return;
     // access the brush instance
     const highlighter = pic.brush('highlight');
     // highlight a value
-    highlighter.addValue('qHyperCube/qDimensionInfo/0', 1);
+    highlighter.on('update', (added) => {
+      if (added[0]) {
+        selectVal(added[0].values[0]);
+      } else {
+        pic.brush('highlight').end();
+        //app.clearAll();
+      }
+    });  
+  
+    //highlighter.addValue('qHyperCube/qDimensionInfo/1', 0);
   }, [pic]);
 
   let msg = '';
