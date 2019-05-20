@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './kpi.scss';
-import { createReadStream } from 'fs';
 
 export default function useKpi(layout, app) {
  
