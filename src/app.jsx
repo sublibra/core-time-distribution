@@ -174,7 +174,7 @@ export default function App() {
   // fetch the layout.
   const [layout2, layoutError2] = useLayout(model2);
   // render kpi
-  const kpi = useKpi(layout2);
+  const kpi = useKpi(layout2, app);
 
   const selectVal = async (value) => {
     const field = await app.getField('week');
