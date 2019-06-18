@@ -1,7 +1,7 @@
 {
   "qInfo": {
     "qType": "visualization",
-    "qId": "vis-2"
+    "qId": "vis-1"
   },
   "type": "my-picasso-chart",
   "labels": true,
@@ -10,7 +10,7 @@
       {
         "qDef": {
           "qFieldDefs": [
-            "week"
+            "weekDay"
           ],
           "qSortCriterias": [
             {

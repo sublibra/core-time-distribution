@@ -15,6 +15,7 @@ Load * resident raw_data;
 week:
 Load
   Date, 
+  WeekDay(Date) as weekDay,
   week(Date, 0) as week
 Resident measurements;
 
