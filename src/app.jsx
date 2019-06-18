@@ -6,18 +6,20 @@ import picasso from 'picasso.js';
 import picassoQ from 'picasso-plugin-q';
 import usePromise from 'react-use-promise';
 import picasso_props from '../artifacts/object-picasso-chart.json';
+import weeklyChartProps from '../artifacts/object-picasso-day-chart.json';
 import kpi_props from '../artifacts/object-kpi.json'
 import useKpi from './kpi';
+import lodash from 'lodash';
 
-const settings = {
+const stacked_chart_settings = {
   collections: [{
     key: 'stacked',
     data: {
       extract: {
-        field: 'qDimensionInfo/0', //week
+        field: 'qDimensionInfo/0', 
         props: {
-          series: { field: 'qDimensionInfo/1' }, //type
-          end: { field: 'qMeasureInfo/0' } //avg(size)
+          series: { field: 'qDimensionInfo/1' }, 
+          end: { field: 'qMeasureInfo/0' } 
         }
       },
       stack: {
@@ -54,11 +56,8 @@ const settings = {
   },
   components: [
     { type: 'axis', dock: 'left', scale: 'y' },
-    { type: 'axis', dock: 'bottom', scale: 't'},
-    { type: 'text', text: 'Qlik Core Time distribution', dock: 'top' },
+    { type: 'axis', dock: 'bottom', scale: 't' },
     { type: 'text', text: 'Size', dock: 'left' },
-    { type: 'text', text: 'week', dock: 'bottom' },
-    //{ type: 'legend-cat', scale: 'catcolor', dock: 'top' },
     {
       key: 'bars',
       type: 'box',
@@ -70,8 +69,8 @@ const settings = {
         minor: { scale: 'y', ref: 'end' },
         box: {
           maxWidthPx: 200,
-          fill: function(d) { return d.resources.scale('catcolor')(d.datum.series.label); },
-        }
+          fill: function (d) { return d.resources.scale('catcolor')(d.datum.series.label); },      
+        },
       },
       brush: {
         trigger: [{
@@ -87,55 +86,24 @@ const settings = {
           },
         }],
       },
-    }],
+    }
+  ],
 };
 
-const settings_barchart = {
-  scales: {
-    x: {
-      data: { extract: { field: 'qDimensionInfo/0', props: { name: { field: 'qDimensionInfo/0', label: v => v.qText } } } },
-      padding: 0.2,
-    },
-    y: {
-      data: { field: 'qMeasureInfo/0' },
-      include: [0],
-      invert: true,
-    },
-    color: {
-      data: { extract: { field: 'qDimensionInfo/0' } },
-      type: 'color',
-    },
-  },
-  components: [
-    { type: 'axis', dock: 'left', scale: 'y' },
-    { type: 'axis', dock: 'bottom', scale: 'x' },
-    { type: 'text', text: 'Qlik Core Time distribution', dock: 'top' },
-    { type: 'text', text: 'Size', dock: 'left' },
-    { type: 'text', text: 'week', dock: 'bottom' },
-    { type: 'legend-cat', scale: 'color', dock: 'top' },
-    {
-      key: 'bars',
-      type: 'box',
-      data: {
-        extract: {
-          field: 'qDimensionInfo/0',
-          props: {
-            start: 0,
-            end: { field: 'qMeasureInfo/0' },
-          },
-        },
-      },
-      settings: {
-        major: { scale: 'x' },
-        minor: { scale: 'y' },
-        box: {
-          maxWidthPx: 200,
-          fill: { scale: 'color' },
-          strokeWidth: 1,
-        },
-      }
-    }],
-};
+
+// use stacked template and add configuration
+let weekly_settings = lodash.cloneDeep(stacked_chart_settings);
+weekly_settings.components.push(
+  { type: 'text', text: 'Time allocation per week', dock: 'top' },
+  { type: 'text', text: 'week', dock: 'bottom' }
+);
+
+
+let weekday_settings = lodash.cloneDeep(stacked_chart_settings);
+weekday_settings.components.push(
+  { type: 'text', text: 'Time allocation per weekday', dock: 'top' },
+  { type: 'text', text: 'day', dock: 'bottom' }
+);
 
 const useGlobal = session => usePromise(() => session.open(), [session]);
 
@@ -157,30 +125,34 @@ picasso.use(picassoQ);
 export default function App() {
   // we need to keep track of an element reference for the picasso chart.
   const element = useRef(null);
+  const weeklyChart = useRef(null);
+  
   // we need to use the useMemo hook to avoid creating new enigma.js sessions each time.
   const session = useMemo(() => enigma.create({ schema, url: 'ws://localhost:29076/app' }), [false]);
   const [global] = useGlobal(session);
   const app = useApp(global);
 
-  // fetch the model
+  // Weekly chart
   const [model, modelError] = useModel(app, picasso_props);
-  // fetch the layout.
   const [layout, layoutError] = useLayout(model);
-  // render picasso chart.
-  const pic = usePicasso(element, settings, layout);
+
+  const pic = usePicasso(element, weekly_settings, layout);
 
   // KPI Objects
   const [model2, modelError2] = useModel(app, kpi_props);
-  // fetch the layout.
   const [layout2, layoutError2] = useLayout(model2);
-  // render kpi
   const kpi = useKpi(layout2, app);
+
+  // Weekday chart
+  const [model3, modelError3] = useModel(app, weeklyChartProps);
+  const [layout3, layoutError3] = useLayout(model3);
+  const weekChart = usePicasso(weeklyChart, weekday_settings, layout3);
 
   const selectVal = async (value) => {
     const field = await app.getField('week');
-    await field.lowLevelSelect([value],true);
+    await field.lowLevelSelect([value], true);
   };
-  
+
   // we want to start with one value highlighted in the chart.
   useEffect(() => {
     if (!pic) return;
@@ -194,8 +166,8 @@ export default function App() {
         pic.brush('highlight').end();
         //app.clearAll();
       }
-    });  
-  
+    });
+
     //highlighter.addValue('qHyperCube/qDimensionInfo/1', 0);
   }, [pic]);
 
@@ -210,9 +182,13 @@ export default function App() {
 
   return (
     <div className="app">
+      <h1>Qlik Core Time allocation</h1>
       {kpi}
       <div className="chart">
         <div ref={element}>{msg}</div>
+      </div>
+      <div className="chart">
+        <div ref={weeklyChart}>{msg}</div>
       </div>
     </div>
   );

@@ -15,3 +15,7 @@
   height: 100%;
   position: relative;
 }
+
+h1 {
+  text-align: center;
+}
