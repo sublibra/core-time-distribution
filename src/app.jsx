@@ -9,17 +9,16 @@ import picasso_props from '../artifacts/object-picasso-chart.json';
 import weeklyChartProps from '../artifacts/object-picasso-day-chart.json';
 import kpi_props from '../artifacts/object-kpi.json'
 import useKpi from './kpi';
-import lodash from 'lodash';
 
-const stacked_chart_settings = {
+const week_allocation_settings = {
   collections: [{
     key: 'stacked',
     data: {
       extract: {
-        field: 'qDimensionInfo/0', 
+        field: 'qDimensionInfo/0',
         props: {
-          series: { field: 'qDimensionInfo/1' }, 
-          end: { field: 'qMeasureInfo/0' } 
+          series: { field: 'qDimensionInfo/1' },
+          end: { field: 'qMeasureInfo/0' }
         }
       },
       stack: {
@@ -55,9 +54,12 @@ const stacked_chart_settings = {
     },
   },
   components: [
+    { type: 'text', text: 'Time allocation per week', dock: 'top' },
     { type: 'axis', dock: 'left', scale: 'y' },
+    { type: 'text', text: 'proportion', dock: 'left' },
+    { type: 'legend-cat', scale: 'catcolor', dock: 'top' },
     { type: 'axis', dock: 'bottom', scale: 't' },
-    { type: 'text', text: 'Size', dock: 'left' },
+    { type: 'text', text: 'week', dock: 'bottom' },
     {
       key: 'bars',
       type: 'box',
@@ -69,7 +71,9 @@ const stacked_chart_settings = {
         minor: { scale: 'y', ref: 'end' },
         box: {
           maxWidthPx: 200,
-          fill: function (d) { return d.resources.scale('catcolor')(d.datum.series.label); },      
+          fill: function (d) {
+            return d.resources.scale('catcolor')(d.datum.series.label);
+          }
         },
       },
       brush: {
@@ -90,20 +94,77 @@ const stacked_chart_settings = {
   ],
 };
 
+const weekday_settings = {
+  collections: [{
+    key: 'stacked',
+    data: {
+      extract: {
+        field: 'qDimensionInfo/0',
+        props: {
+          line: { field: 'qDimensionInfo/1' },
+          end: { field: 'qMeasureInfo/0' }
+        }
+      },
+      stack: {
+        stackKey: d => d.value,
+        value: d => d.end.value
+      }
+    }
+  }],
+  scales: {
+    y: {
+      data: {
+        collection: {
+          key: 'stacked'
+        }
+      },
+      invert: true,
+      expand: 0.1,
+      min: 0,
+      max: 1
 
-// use stacked template and add configuration
-let weekly_settings = lodash.cloneDeep(stacked_chart_settings);
-weekly_settings.components.push(
-  { type: 'text', text: 'Time allocation per week', dock: 'top' },
-  { type: 'text', text: 'week', dock: 'bottom' }
-);
-
-
-let weekday_settings = lodash.cloneDeep(stacked_chart_settings);
-weekday_settings.components.push(
-  { type: 'text', text: 'Time allocation per weekday', dock: 'top' },
-  { type: 'text', text: 'day', dock: 'bottom' }
-);
+    },
+    t: { data: { extract: { field: 'qDimensionInfo/0' } } },
+    catcolor: {
+      type: 'categorical-color',
+      data: ['feature', 'enhancement', 'maintenance', 'admin'],
+      range: ['#5271C2', '#35a541', '#bdb235', '#db6623']
+    },
+    color: { data: { extract: { field: 'qDimensionInfo/1' } }, type: 'color' }
+  },
+  components: [
+    { type: 'text', text: 'Time allocation per weekday', dock: 'top' },
+    { type: 'axis', dock: 'left', scale: 'y' }, 
+    { type: 'text', text: 'proportion', dock: 'left' },
+    { type: 'axis', dock: 'bottom', scale: 't' }, 
+    { type: 'text', text: 'day', dock: 'bottom' },
+    {
+      key: 'lines',
+      type: 'line',
+      data: {
+        collection: 'stacked'
+      },
+      settings: {
+        coordinates: {
+          major: { scale: 't' },
+          minor0: { scale: 'y', ref: 'start' },
+          minor: { scale: 'y', ref: 'end' },
+          layerId: { ref: 'line' }
+        },
+        layers: {
+          curve: 'monotone',
+          line: {
+            show: false
+          },
+          area: {
+            fill: function (d) {
+              return d.resources.scale('catcolor')(d.datum.line.label);
+            }
+          }
+        }
+      }
+    }]
+}
 
 const useGlobal = session => usePromise(() => session.open(), [session]);
 
@@ -124,19 +185,18 @@ picasso.use(picassoQ);
 
 export default function App() {
   // we need to keep track of an element reference for the picasso chart.
-  const element = useRef(null);
-  const weeklyChart = useRef(null);
-  
+  const weeksChart = useRef(null);
+  const weekdayChart = useRef(null);
+
   // we need to use the useMemo hook to avoid creating new enigma.js sessions each time.
   const session = useMemo(() => enigma.create({ schema, url: 'ws://localhost:29076/app' }), [false]);
   const [global] = useGlobal(session);
   const app = useApp(global);
 
-  // Weekly chart
+  // Weekschart
   const [model, modelError] = useModel(app, picasso_props);
   const [layout, layoutError] = useLayout(model);
-
-  const pic = usePicasso(element, weekly_settings, layout);
+  const weeksChartPic = usePicasso(weeksChart, week_allocation_settings, layout);
 
   // KPI Objects
   const [model2, modelError2] = useModel(app, kpi_props);
@@ -146,7 +206,7 @@ export default function App() {
   // Weekday chart
   const [model3, modelError3] = useModel(app, weeklyChartProps);
   const [layout3, layoutError3] = useLayout(model3);
-  const weekChart = usePicasso(weeklyChart, weekday_settings, layout3);
+  const weekDayChart = usePicasso(weekdayChart, weekday_settings, layout3);
 
   const selectVal = async (value) => {
     const field = await app.getField('week');
@@ -155,21 +215,18 @@ export default function App() {
 
   // we want to start with one value highlighted in the chart.
   useEffect(() => {
-    if (!pic) return;
+    if (!weeksChartPic) return;
     // access the brush instance
-    const highlighter = pic.brush('highlight');
+    const weekChartHighlighter = weeksChartPic.brush('highlight');
     // highlight a value
-    highlighter.on('update', (added) => {
+    weekChartHighlighter.on('update', (added) => {
       if (added[0]) {
         selectVal(added[0].values[0]);
       } else {
-        pic.brush('highlight').end();
-        //app.clearAll();
+        weeksChartPic.brush('highlight').end();
       }
     });
-
-    //highlighter.addValue('qHyperCube/qDimensionInfo/1', 0);
-  }, [pic]);
+  }, [weeksChartPic]);
 
   let msg = '';
   if (!app) {
@@ -185,10 +242,10 @@ export default function App() {
       <h1>Qlik Core Time allocation</h1>
       {kpi}
       <div className="chart">
-        <div ref={element}>{msg}</div>
+        <div ref={weeksChart}>{msg}</div>
       </div>
       <div className="chart">
-        <div ref={weeklyChart}>{msg}</div>
+        <div ref={weekdayChart}>{msg}</div>
       </div>
     </div>
   );
