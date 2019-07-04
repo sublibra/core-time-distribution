@@ -146,9 +146,7 @@ const week_allocation_settings = {
               stroke: '#333',
               fontSize: 20,
               action: () => {
-                
                 console.log(week_allocation_settings.components);
-
               },
               context: 'hoover'
             }
