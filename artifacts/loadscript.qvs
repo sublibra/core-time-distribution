@@ -1,12 +1,24 @@
+// User this if you are reading from a google doc html representation
 raw_data:
 Load 
   Date,
-  If(IsNull(feature), 0, feature) as feature,
-  If(IsNull(enhancement), 0, enhancement) as enhancement,
-  If(IsNull(maintenance), 0, maintenance) as maintenance,
-  If(IsNull(admin), 0, admin) as admin
-   from [lib://data/measurements.xlsx] 
-(ooxml, embedded labels, table is data);
+  If(feature = '',  0, Num#(feature, '##,#%') * 0.1) as feature,
+  If(enhancement = '', 0, Num#(enhancement, '##,#%') * 0.1) as enhancement,
+  If(maintenance = '', 0, Num#(maintenance, '##,#%') * 0.1) as maintenance,
+  If(admin = '', 0, Num#(admin, '##,#%') * 0.1) as admin
+FROM [lib://data]
+(html, utf8, embedded labels, table is @1) where Date <> '';
+
+// Use this script if you are reading from a local excel file
+// raw_data:
+// Load 
+//   Date,
+//   If(IsNull(feature), 0, feature) as feature,
+//   If(IsNull(enhancement), 0, enhancement) as enhancement,
+//   If(IsNull(maintenance), 0, maintenance) as maintenance,
+//   If(IsNull(admin), 0, admin) as admin
+//    from [lib://data/measurements.xlsx] 
+// (ooxml, embedded labels, table is data);
 
 measurements:
 Crosstable (Type, Size)

@@ -5,5 +5,12 @@ measures: ./artifacts/measure*.json
 objects: ./artifacts/object*.json
 connections:
   data:
-    type: folder
-    connectionstring: /data/
+#    User this for testing the solution against a local folder
+#    type: folder
+#    connectionstring: /data/
+
+#   User this for connecting to a google document
+#   The connection string will be past through the environment variable
+#   GOOGLE_DOC_CONNECTIONSTRING
+    type: internet
+    connectionstring: ${GOOGLE_DOC_CONNECTIONSTRING}

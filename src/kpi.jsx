@@ -26,7 +26,7 @@ export default function useKpi(layout, app) {
       res.push(
         <div className={className} onClick={() => selectType(layout.qHyperCube.qMeasureInfo[i].qFallbackTitle)}>
         <p className="name">Average <br /><span>{layout.qHyperCube.qMeasureInfo[i].qFallbackTitle}</span></p>
-        <p className="num">{Math.trunc(layout.qHyperCube.qGrandTotalRow[i].qText * 100)}%</p>
+        <p className="num">{Math.trunc(layout.qHyperCube.qGrandTotalRow[i].qNum * 100)}%</p>
       </div>)
     }
     return res;
