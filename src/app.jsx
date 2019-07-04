@@ -10,6 +10,44 @@ import weeklyChartProps from '../artifacts/object-picasso-day-chart.json';
 import kpi_props from '../artifacts/object-kpi.json'
 import useKpi from './kpi';
 
+labels = function({
+  c,
+  justify = 0.5,
+  align = 0.5,
+  position = 'inside',
+  fontSize = 12,
+  fill = '#111'
+}) {
+  return {
+    type: 'labels',
+    displayOrder: 1,
+    settings: {
+      sources: [{
+        component: c,
+        selector: 'rect',
+        strategy: {
+          type: 'bar',
+          settings: {
+            direction: 'left',
+            fontSize,
+            align,
+            labels: [{
+              placements: [{
+                position,
+                fill,
+                justify
+              }],
+              label: function label(d) {
+                return Math.trunc((d.data.end.value - d.data.start.value)*100);
+              }
+            }]
+          }
+        }
+      }]
+    }
+  };
+}
+
 const week_allocation_settings = {
   collections: [{
     key: 'stacked',
@@ -27,6 +65,12 @@ const week_allocation_settings = {
       }
     }
   }],
+  formatters: {
+    percentageFormatter: {
+      formatter: 'd3',
+      format: '0.1%'
+    }
+  },
   scales: {
     y: {
       data: {
@@ -55,7 +99,7 @@ const week_allocation_settings = {
   },
   components: [
     { type: 'text', text: 'Time allocation per week', dock: 'top' },
-    { type: 'axis', dock: 'left', scale: 'y' },
+    { type: 'axis', dock: 'left', scale: 'y', formatter: 'percentageFormatter' },
     { type: 'text', text: 'proportion', dock: 'left' },
     { type: 'legend-cat', scale: 'catcolor', dock: 'top' },
     { type: 'axis', dock: 'bottom', scale: 't' },
@@ -80,7 +124,13 @@ const week_allocation_settings = {
         trigger: [{
           on: 'tap',
           contexts: ['highlight'],
-        }],
+        },
+        {
+          on: 'over',
+          action: 'set',
+          contexts: ['hoover'],        
+        }
+      ],
         consume: [{
           context: 'highlight',
           style: {
@@ -88,9 +138,26 @@ const week_allocation_settings = {
               opacity: 0.5,
             },
           },
-        }],
+        },
+        {
+          context: 'hoover',
+          style: {
+            active: {
+              stroke: '#333',
+              fontSize: 20,
+              action: () => {
+                
+                console.log(week_allocation_settings.components);
+
+              },
+              context: 'hoover'
+            }
+          }
+        }
+      ],
       },
-    }
+    },
+    labels({c: 'bars'}),
   ],
 };
 
@@ -111,6 +178,12 @@ const weekday_settings = {
       }
     }
   }],
+  formatters: {
+    percentageFormatter: {
+      formatter: 'd3',
+      format: '0.1%'
+    }
+  },
   scales: {
     y: {
       data: {
@@ -134,7 +207,7 @@ const weekday_settings = {
   },
   components: [
     { type: 'text', text: 'Time allocation per weekday', dock: 'top' },
-    { type: 'axis', dock: 'left', scale: 'y' }, 
+    { type: 'axis', dock: 'left', scale: 'y', formatter: 'percentageFormatter' }, 
     { type: 'text', text: 'proportion', dock: 'left' },
     { type: 'axis', dock: 'bottom', scale: 't' }, 
     { type: 'text', text: 'day', dock: 'bottom' },
@@ -213,7 +286,6 @@ export default function App() {
     await field.lowLevelSelect([value], true);
   };
 
-  // we want to start with one value highlighted in the chart.
   useEffect(() => {
     if (!weeksChartPic) return;
     // access the brush instance
@@ -225,6 +297,10 @@ export default function App() {
       } else {
         weeksChartPic.brush('highlight').end();
       }
+    });
+
+    weekChartHighlighter.on('hoover', (element) => {
+      console.log(element);
     });
   }, [weeksChartPic]);
 
