@@ -5,9 +5,6 @@ import { useModel, useLayout, usePicasso } from 'hamus.js';
 import picasso from 'picasso.js';
 import picassoQ from 'picasso-plugin-q';
 import usePromise from 'react-use-promise';
-import picasso_props from '../artifacts/object-picasso-chart.json';
-import weeklyChartProps from '../artifacts/object-picasso-day-chart.json';
-import kpi_props from '../artifacts/object-kpi.json'
 import useKpi from './kpi';
 
 labels = function({
@@ -251,6 +248,17 @@ const useApp = (global) => {
   return sessionApp;
 }
 
+const useObjectModel = (app, id) => {
+  [model, error] = usePromise(() => {
+    if (!app) {
+      return null;
+    } else {
+      return app.getObject(id);
+    }
+  }, [app]);
+  return [model, error];
+};
+
 // we need to register the q plugin in order for picasso to understand the QIX hypercube.
 picasso.use(picassoQ);
 
@@ -265,17 +273,17 @@ export default function App() {
   const app = useApp(global);
 
   // Weekschart
-  const [model, modelError] = useModel(app, picasso_props);
+  const [model, modelError] = useObjectModel(app, 'vis-2');
   const [layout, layoutError] = useLayout(model);
   const weeksChartPic = usePicasso(weeksChart, week_allocation_settings, layout);
 
   // KPI Objects
-  const [model2, modelError2] = useModel(app, kpi_props);
+  const [model2, modelError2] = useObjectModel(app, 'kpi-objects');
   const [layout2, layoutError2] = useLayout(model2);
   const kpi = useKpi(layout2, app);
 
   // Weekday chart
-  const [model3, modelError3] = useModel(app, weeklyChartProps);
+  const [model3, modelError3] = useObjectModel(app, 'vis-1');
   const [layout3, layoutError3] = useLayout(model3);
   const weekDayChart = usePicasso(weekdayChart, weekday_settings, layout3);
 
