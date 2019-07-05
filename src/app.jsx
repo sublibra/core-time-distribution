@@ -53,10 +53,10 @@ const week_allocation_settings = {
     key: 'stacked',
     data: {
       extract: {
-        field: 'qDimensionInfo/0',
+        field: 'week',
         props: {
-          series: { field: 'qDimensionInfo/1' },
-          end: { field: 'qMeasureInfo/0' }
+          series: { field: 'Type' },
+          end: { field: 'avg(Size)' }
         }
       },
       stack: {
@@ -84,7 +84,7 @@ const week_allocation_settings = {
       expand: 0.2,
     },
     t: {
-      data: { extract: { field: 'qDimensionInfo/0' } },
+      data: { extract: { field: 'week' } },
       padding: 0.3
     },
     catcolor: {
@@ -93,7 +93,7 @@ const week_allocation_settings = {
       range: ['#5271C2', '#35a541', '#bdb235', '#db6623']
     },
     color: {
-      data: { extract: { field: 'qDimensionInfo/1' } },
+      data: { extract: { field: 'week' } },
       type: 'color',
     },
   },
@@ -146,7 +146,7 @@ const week_allocation_settings = {
               stroke: '#333',
               fontSize: 20,
               action: () => {
-                console.log(week_allocation_settings.components);
+                //console.log(week_allocation_settings.components);
               },
               context: 'hoover'
             }
@@ -164,10 +164,10 @@ const weekday_settings = {
     key: 'stacked',
     data: {
       extract: {
-        field: 'qDimensionInfo/0',
+        field: 'weekDay',
         props: {
-          line: { field: 'qDimensionInfo/1' },
-          end: { field: 'qMeasureInfo/0' }
+          line: { field: 'Type' },
+          end: { field: 'avg(Size)' }
         }
       },
       stack: {
@@ -195,13 +195,13 @@ const weekday_settings = {
       max: 1
 
     },
-    t: { data: { extract: { field: 'qDimensionInfo/0' } } },
+    t: { data: { extract: { field: 'weekDay' } } },
     catcolor: {
       type: 'categorical-color',
       data: ['feature', 'enhancement', 'maintenance', 'admin'],
       range: ['#5271C2', '#35a541', '#bdb235', '#db6623']
     },
-    color: { data: { extract: { field: 'qDimensionInfo/1' } }, type: 'color' }
+    color: { data: { extract: { field: 'Type' } }, type: 'color' }
   },
   components: [
     { type: 'text', text: 'Time allocation per weekday', dock: 'top' },
@@ -298,7 +298,7 @@ export default function App() {
     });
 
     weekChartHighlighter.on('hoover', (element) => {
-      console.log(element);
+      //console.log(element);
     });
   }, [weeksChartPic]);
 
